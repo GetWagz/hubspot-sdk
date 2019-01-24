@@ -66,6 +66,32 @@ func CreateOrUpdateContact(contact *Contact) error {
 	return nil
 }
 
+// DeleteContactByVID deletes a single contact by it's VID
+//
+// API Doc: https://developers.hubspot.com/docs/methods/contacts/delete_contact
+func DeleteContactByVID(vid int64) error {
+	if vid == 0 {
+		return APIError{
+			HTTPCode:   http.StatusBadRequest,
+			SystemCode: CodeContactVIDZero,
+			Message:    "the VID for the contact cannot be 0 when deleting",
+			Body:       nil,
+		}
+	}
+	_, err := makeCall("DELETE", fmt.Sprintf("/contacts/v1/contact/vid/%d", vid), nil)
+	if err != nil {
+		if apiErr, apiErrOK := err.(APIError); apiErrOK {
+			if apiErr.HTTPCode == 404 {
+				apiErr.SystemCode = CodeContactNotFound
+				return apiErr
+			}
+			apiErr.SystemCode = CodeContactCouldNotBeCreated
+			return apiErr
+		}
+	}
+	return err
+}
+
 func (input *Contact) convertContactProperties() []map[string]string {
 	props := []map[string]string{}
 	contact := structs.Map(input)

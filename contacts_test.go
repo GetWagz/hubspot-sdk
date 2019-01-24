@@ -63,6 +63,37 @@ func TestContactCreate(t *testing.T) {
 	assert.NotZero(t, input.VID)
 }
 
+func TestContactDelete(t *testing.T) {
+	ConfigSetup()
+
+	// 0 is an error
+	err := DeleteContactByVID(0)
+	assert.NotNil(t, err)
+	apiErr, cOK := err.(APIError)
+	require.True(t, cOK)
+	assert.Equal(t, http.StatusBadRequest, apiErr.HTTPCode)
+	assert.Equal(t, CodeContactVIDZero, apiErr.SystemCode)
+
+	// 1 can't be found
+	err = DeleteContactByVID(1)
+	assert.NotNil(t, err)
+	apiErr, cOK = err.(APIError)
+	require.True(t, cOK)
+	assert.Equal(t, http.StatusNotFound, apiErr.HTTPCode)
+	assert.Equal(t, CodeContactNotFound, apiErr.SystemCode)
+
+	// let's create, use that one as our delete subject
+	contact := Contact{
+		Email: "test@test.com",
+	}
+	err = CreateOrUpdateContact(&contact)
+	assert.Nil(t, err)
+	assert.NotZero(t, contact.VID)
+
+	err = DeleteContactByVID(contact.VID)
+	assert.Nil(t, err)
+}
+
 func TestConversion(t *testing.T) {
 	input := Contact{
 		FirstName: "Kevin",

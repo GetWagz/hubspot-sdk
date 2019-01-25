@@ -24,11 +24,17 @@ First, there are some optional environment variables (with *hopefully* sane defa
 
 `HUBSPOT_SDK_ROOT_URL` is the root URL for the Hubspot service, defaults to `https://api.hubapi.com`
 
+`HUBSPOT_SDK_APPLICATION_ID` is the oAuth application ID; this is not required for all functionality
+
+`HUBSPOT_SDK_USER_ID` is the oAuth userID for the developer account; this is not required for all functionality
+
 `HUBSPOT_SDK_API_KEY` is the api key for your account; defaults to `demo`
 
 `HUBSPOT_SDK_LOGGING` will toggle logging on if not blank and not `off`, `false`, or `no`
 
 ## Testing
+
+Please note that testing without changing environment variables will only be able to test some aspects of the API; the `demo` api key for the `HUBSPOT_SDK_API_KEY` will allow testing `Contacts` but not `Events`, which require an oAuth application. If testing those is important to you, you should use a dummy account and pass in the information as appropriate in the environment.
 
 To run the tests, run
 

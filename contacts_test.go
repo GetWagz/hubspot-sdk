@@ -1,8 +1,11 @@
 package hubspot
 
 import (
+	"fmt"
+	"math/rand"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -94,6 +97,65 @@ func TestContactDelete(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestContactGet(t *testing.T) {
+	ConfigSetup()
+
+	_, err := GetContactByEmail("")
+	assert.NotNil(t, err)
+	apiErr, cOK := err.(APIError)
+	require.True(t, cOK)
+	assert.Equal(t, http.StatusBadRequest, apiErr.HTTPCode)
+	assert.Equal(t, CodeContactNoEmail, apiErr.SystemCode)
+
+	// create a random email
+	rand.Seed(time.Now().UnixNano())
+	random1 := rand.Int63()
+	random2 := rand.Int63()
+	randomEmail := fmt.Sprintf("%d-rand@%d.notrealdomain", random1, random2)
+
+	_, err = GetContactByEmail(randomEmail)
+	assert.NotNil(t, err)
+	apiErr, cOK = err.(APIError)
+	require.True(t, cOK)
+	assert.Equal(t, http.StatusNotFound, apiErr.HTTPCode)
+	assert.Equal(t, CodeContactNotFound, apiErr.SystemCode)
+
+	// now, create a contact and then get it and delete it
+	goodEmail := fmt.Sprintf("test-%d@test.com", random1)
+	contact := Contact{
+		Email:     goodEmail,
+		FirstName: fmt.Sprintf("First-%d", random1),
+		LastName:  fmt.Sprintf("Last-%d", random2),
+		Company:   "Wagz",
+		Address:   "230 Commerce St",
+		City:      "Portsmouth",
+		State:     "NH",
+		Zip:       "03801",
+		Website:   "https://www.wagz.com",
+		Phone:     "1-800-GET-WAGZ",
+	}
+	err = CreateOrUpdateContact(&contact)
+	assert.Nil(t, err)
+	assert.NotZero(t, contact.VID)
+
+	// make sure we clean up after ourselves
+	defer DeleteContactByVID(contact.VID)
+
+	foundContact, err := GetContactByEmail(goodEmail)
+	assert.Nil(t, err)
+	assert.Equal(t, contact.VID, foundContact.VID)
+	assert.Equal(t, contact.Email, foundContact.Email)
+	assert.Equal(t, contact.FirstName, foundContact.FirstName)
+	assert.Equal(t, contact.LastName, foundContact.LastName)
+	assert.Equal(t, contact.Company, foundContact.Company)
+	assert.Equal(t, contact.Address, foundContact.Address)
+	assert.Equal(t, contact.City, foundContact.City)
+	assert.Equal(t, contact.State, foundContact.State)
+	assert.Equal(t, contact.Zip, foundContact.Zip)
+	assert.Equal(t, contact.Website, foundContact.Website)
+	assert.Equal(t, contact.Phone, foundContact.Phone)
+}
+
 func TestConversion(t *testing.T) {
 	input := Contact{
 		FirstName: "Kevin",
@@ -106,7 +168,7 @@ func TestConversion(t *testing.T) {
 			},
 		},
 	}
-	props := input.convertContactProperties()
+	props := input.convertContactToProperties()
 	// iterate and make sure that the fields we expect are the fields we get
 	firstFound := false
 	lastFound := false

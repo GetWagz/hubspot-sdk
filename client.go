@@ -38,7 +38,7 @@ func makeCall(method, endpoint string, data interface{}) (ret *APIReturn, err er
 	// TODO: mocking
 
 	url := fmt.Sprintf("%s%s", Config.RootURL, endpoint)
-	fmt.Printf("\n===================================\n%s\n", url)
+	log("info", "api_url", fmt.Sprintf("Calling URL: %s", url), map[string]string{})
 
 	var response *resty.Response
 

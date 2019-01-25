@@ -13,6 +13,9 @@ type ContactProperty struct {
 	Value    string `json:"value"`
 }
 
+// Contact is an individual person that you would like to create or update in Hubspot. Email is the only required field.
+// By default, the VID field will be 0. After a create call, the VID will be filled in for you.
+// Additional porperties are tricky
 type Contact struct {
 	VID                  int64
 	Email                string
@@ -44,7 +47,7 @@ func CreateOrUpdateContact(contact *Contact) error {
 	}
 
 	// generate the props
-	props := contact.convertContactProperties()
+	props := contact.convertContactToProperties()
 	send := map[string]interface{}{
 		"properties": props,
 	}
@@ -92,10 +95,80 @@ func DeleteContactByVID(vid int64) error {
 	return err
 }
 
-func (input *Contact) convertContactProperties() []map[string]string {
+// GetContactByEmail gets a single contact by their email address
+//
+// API Doc: https://developers.hubspot.com/docs/methods/contacts/get_contact_by_email
+func GetContactByEmail(email string) (Contact, error) {
+	contact := Contact{}
+	if email == "" || !strings.Contains(email, "@") {
+		return contact, APIError{
+			HTTPCode:   http.StatusBadRequest,
+			SystemCode: CodeContactNoEmail,
+			Message:    "you must specify an email address for that contact",
+			Body:       nil,
+		}
+	}
+	res, err := makeCall("GET", fmt.Sprintf("/contacts/v1/contact/email/%s/profile", email), nil)
+	if err != nil {
+		if apiErr, apiErrOK := err.(APIError); apiErrOK {
+			if apiErr.HTTPCode == 404 {
+				apiErr.SystemCode = CodeContactNotFound
+				return contact, apiErr
+			}
+			apiErr.SystemCode = CodeGeneralError
+			return contact, apiErr
+		}
+	}
+	// this part is fun; we don't want to worry about all of the properties,
+	// so let's loop and figure it out
+	fields := res.Body.(map[string]interface{})
+	contact.populateContactFields(fields)
+	return contact, err
+}
+
+func (contact *Contact) populateContactFields(fields map[string]interface{}) {
+	for k, v := range fields {
+		if k == "vid" {
+			vidF := v.(float64)
+			contact.VID = int64(vidF)
+		}
+		if k == "properties" {
+			// this is the really big one
+			// we need to loop over all of the possible proprties; this is a map of string/interfaces
+			properties := v.(map[string]interface{})
+			for pK, pV := range properties {
+				vals := pV.(map[string]interface{})
+				switch pK {
+				case "firstname":
+					contact.FirstName = vals["value"].(string)
+				case "lastname":
+					contact.LastName = vals["value"].(string)
+				case "email":
+					contact.Email = vals["value"].(string)
+				case "address":
+					contact.Address = vals["value"].(string)
+				case "city":
+					contact.City = vals["value"].(string)
+				case "state":
+					contact.State = vals["value"].(string)
+				case "zip":
+					contact.Zip = vals["value"].(string)
+				case "company":
+					contact.Company = vals["value"].(string)
+				case "phone":
+					contact.Phone = vals["value"].(string)
+				case "website":
+					contact.Website = vals["value"].(string)
+				}
+			}
+		}
+	}
+}
+
+func (contact *Contact) convertContactToProperties() []map[string]string {
 	props := []map[string]string{}
-	contact := structs.Map(input)
-	for k, v := range contact {
+	contactParsed := structs.Map(contact)
+	for k, v := range contactParsed {
 		// get the string value, if possible
 		if val, valOK := v.(string); valOK && v != "" {
 			props = append(props, map[string]string{
@@ -105,8 +178,8 @@ func (input *Contact) convertContactProperties() []map[string]string {
 		}
 	}
 	// now we need to merge the additional properties
-	if input.AdditionalProperties != nil {
-		for _, p := range *input.AdditionalProperties {
+	if contact.AdditionalProperties != nil {
+		for _, p := range *contact.AdditionalProperties {
 			props = append(props, map[string]string{
 				"property": p.Property,
 				"value":    p.Value,

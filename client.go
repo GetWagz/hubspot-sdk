@@ -48,23 +48,28 @@ func makeCall(method, endpoint string, data interface{}) (ret *APIReturn, err er
 	queryParams := map[string]string{
 		"hapikey": Config.HubspotAPIKey,
 	}
+	if Config.HubspotUserID != "" {
+		queryParams["userId"] = Config.HubspotUserID
+	}
 
 	// Now, do what we need to do depending on the method
 	var reqErr error
 
 	switch method {
 	case http.MethodGet:
-		// merge the two data sets
-		dataParsed, dataParsedOK := data.(map[string]string)
-		if !dataParsedOK {
-			return nil, APIError{
-				HTTPCode:   http.StatusBadRequest,
-				SystemCode: "request_error_bad_query_string",
-				Message:    "GET requests must use a map[string]string{} for data",
+		if data != nil {
+			// merge the two data sets
+			dataParsed, dataParsedOK := data.(map[string]string)
+			if !dataParsedOK {
+				return nil, APIError{
+					HTTPCode:   http.StatusBadRequest,
+					SystemCode: "request_error_bad_query_string",
+					Message:    "GET requests must use a map[string]string{} for data",
+				}
 			}
-		}
-		for k, v := range dataParsed {
-			queryParams[k] = v
+			for k, v := range dataParsed {
+				queryParams[k] = v
+			}
 		}
 		response, reqErr = request.SetQueryParams(queryParams).Get(url)
 	case http.MethodDelete:

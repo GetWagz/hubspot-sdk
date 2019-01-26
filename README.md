@@ -4,6 +4,10 @@
 
 This library serves as a simple SDK for the Hubspot API. The existing solutions did not meet our needs, so we decided to roll our own. We do not currently implement the entire API (as that is a lot) so PRs are always welcome.
 
+## Warning
+
+This SDK is not yet ready for production use and is under active development. If you would like to assist, feel free, but know that it is actively changing and should *not* currently be used for any real application.
+
 *NOTE* This SDK exists as a temporary solution until an official SDK is released from Hubspot or a community-standard SDK is developed. 
 
 ## Installing
@@ -44,7 +48,7 @@ For coverage in HTML format, run
 
 `go test -coverprofile=coverage.out && go tool cover -html=coverage.out`
 
-The coverage is notably lower than ideal, which may cause concerns. However, most of the uncovered calls would be calls directly to the Hubspot API, which we cannot easily mock in success conditions, that are malformed. Feel free to check the results of the coverage report to see what exactly isn't covered and make a determination if that is acceptable to you. This library is currently being used in production.
+The coverage is notably lower than ideal, which may cause concerns. However, most of the uncovered calls would be calls directly to the Hubspot API, which we cannot easily mock in success conditions, that are malformed. Feel free to check the results of the coverage report to see what exactly isn't covered and make a determination if that is acceptable to you. 
 
 ## Contributing
 

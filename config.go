@@ -13,12 +13,16 @@ var Config *ConfigStruct
 
 //ConfigStruct holds the various configuration options
 type ConfigStruct struct {
-	Environment          string
-	RootURL              string
-	HubspotApplicationID string
-	HubspotAPIKey        string
-	HubspotUserID        string
-	Logging              bool
+	Environment   string
+	RootURL       string
+	HubspotAPIKey string
+	Logging       bool
+	// Certain API endpoints require an OAuth application; those are specified here
+	HubspotApplicationID     string
+	HubspotUserID            string
+	HubspotClientID          string
+	HubspotClientSecret      string
+	HubSpotOAuthRefreshToken string
 }
 
 // ConfigSetup sets up the config struct with data from the environment
@@ -46,7 +50,17 @@ func ConfigSetup() *ConfigStruct {
 	}
 
 	c.HubspotApplicationID = os.Getenv("HUBSPOT_SDK_APPLICATION_ID")
+	if c.HubspotApplicationID == "" {
+		c.HubspotApplicationID = "test"
+	}
+
 	c.HubspotUserID = os.Getenv("HUBSPOT_SDK_USER_ID")
+	if c.HubspotUserID == "" {
+		c.HubspotUserID = "test"
+	}
+	c.HubspotClientID = os.Getenv("HUBSPOT_SDK_CLIENT_ID")
+	c.HubspotClientSecret = os.Getenv("HUBSPOT_SDK_CLIENT_SECRET")
+	c.HubSpotOAuthRefreshToken = os.Getenv("HUBSPOT_SDK_OAUTH_REFRESH_TOKEN")
 
 	shouldLog := strings.ToLower(os.Getenv("HUBSPOT_SDK_LOGGING"))
 	if shouldLog == "off" || shouldLog == "false" || shouldLog == "no" {

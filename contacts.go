@@ -52,7 +52,10 @@ func CreateOrUpdateContact(contact *Contact) error {
 		"properties": props,
 	}
 
-	ret, err := makeCall("POST", fmt.Sprintf("/contacts/v1/contact/createOrUpdate/email/%s", contact.Email), send)
+	ret, err := prepareCall(EndpointCreateContact, map[string]string{
+		":email": contact.Email,
+	}, send)
+
 	if err != nil {
 		if apiErr, apiErrOK := err.(APIError); apiErrOK {
 			apiErr.SystemCode = CodeContactCouldNotBeCreated
@@ -81,7 +84,10 @@ func DeleteContactByVID(vid int64) error {
 			Body:       nil,
 		}
 	}
-	_, err := makeCall("DELETE", fmt.Sprintf("/contacts/v1/contact/vid/%d", vid), nil)
+
+	_, err := prepareCall(EndpointDeleteContact, map[string]string{
+		":vid": fmt.Sprintf("%d", vid),
+	}, nil)
 	if err != nil {
 		if apiErr, apiErrOK := err.(APIError); apiErrOK {
 			if apiErr.HTTPCode == 404 {
@@ -108,7 +114,9 @@ func GetContactByEmail(email string) (Contact, error) {
 			Body:       nil,
 		}
 	}
-	res, err := makeCall("GET", fmt.Sprintf("/contacts/v1/contact/email/%s/profile", email), nil)
+	res, err := prepareCall(EndpointGetContact, map[string]string{
+		":email": email,
+	}, nil)
 	if err != nil {
 		if apiErr, apiErrOK := err.(APIError); apiErrOK {
 			if apiErr.HTTPCode == 404 {

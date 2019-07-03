@@ -1,6 +1,6 @@
 # Hubspot SDK for Go
 
-[![GoDoc](https://godoc.org/github.com/getwagz/hubspot-sdk?status.svg)](https://godoc.org/github.com/getwagz/hubspot-sdk)
+[![GoDoc](https://godoc.org/github.com/GetWagz/hubspot-sdk?status.svg)](https://godoc.org/github.com/GetWagz/hubspot-sdk)
 
 This library serves as a simple SDK for the Hubspot API. The existing solutions did not meet our needs, so we decided to roll our own. We do not currently implement the entire API (as that is a lot) so PRs are always welcome.
 
@@ -14,11 +14,11 @@ This SDK is not yet ready for production use and is under active development. If
 
 You can simply install the package:
 
-`go get github.com/getwagz/hubspot-sdk`
+`go get github.com/GetWagz/hubspot-sdk`
 
 Or if you are using `dep`:
 
-`dep ensure -add github.com/getwagz/hubspot-sdk`
+`dep ensure -add github.com/GetWagz/hubspot-sdk`
 
 Or if you are using go version > 1.11:
 

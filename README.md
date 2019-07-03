@@ -20,6 +20,10 @@ Or if you are using `dep`:
 
 `dep ensure -add github.com/getwagz/hubspot-sdk`
 
+Or if you are using go version > 1.11:
+
+`go mod tidy && go mod vendor`
+
 ## Usage
 
 First, there are some optional environment variables (with *hopefully* sane defaults):

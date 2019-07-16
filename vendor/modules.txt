@@ -1,0 +1,22 @@
+# github.com/davecgh/go-spew v1.1.1
+github.com/davecgh/go-spew/spew
+# github.com/fatih/structs v1.1.0
+github.com/fatih/structs
+# github.com/go-resty/resty v1.11.0 => gopkg.in/resty.v1 v1.11.0
+github.com/go-resty/resty
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/pmezard/go-difflib v1.0.0
+github.com/pmezard/go-difflib/difflib
+# github.com/sirupsen/logrus v1.3.0
+github.com/sirupsen/logrus
+# github.com/stretchr/testify v1.3.0
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+# golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
+golang.org/x/crypto/ssh/terminal
+# golang.org/x/net v0.0.0-20190119204137-ed066c81e75e
+golang.org/x/net/publicsuffix
+# golang.org/x/sys v0.0.0-20190123074212-c6b37f3e9285
+golang.org/x/sys/unix
+golang.org/x/sys/windows

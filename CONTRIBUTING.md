@@ -13,7 +13,7 @@ Set up the library using the README steps. Please make sure all tests pass and t
 
 Push to your fork and [submit a pull request][pr].
 
-[pr]: https://github.com/getwagz/hubspot-sdk/compare/
+[pr]: https://github.com/GetWagz/hubspot-sdk/compare/
 
 As always, open an issue if you find a bug or problem!
 

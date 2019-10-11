@@ -8,6 +8,7 @@ import (
 	"github.com/fatih/structs"
 )
 
+// ContactProperty defines the structure on the input of any 'Additional Properties' in to a contact entry
 type ContactProperty struct {
 	Property string `json:"property"`
 	Value    string `json:"value"`

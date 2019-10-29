@@ -13,3 +13,9 @@ We recommend you post your name as a ##, then a quick blurb about you, then your
 * Salem, NH
 
 * [My Site](https://www.kevineaton.net)
+
+## Liz Lefavour (Wagz)
+
+* Dog Lover, Customer Service Manager
+
+* Manchester, NH
